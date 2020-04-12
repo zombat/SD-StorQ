@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+<link rel="stylesheet" href="/stylesheets/site.css">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<body>
+	<div class="container-fluid">
+		<title>Queue</title>
+		<div class="row">	
+			<div class="col-sm wrapper-background margin-sides-35">
+				<div class="row site-primary">
+					<div class="col-lg-8 offset-lg-2 text-center">
+						<h1>Queue</h1>
+						<button class="btn btn-danger" onclick="logout()">Log Out</button>
+						<h3>Total Waiting: <span id="Wait-Count"><%= WaitTotal %></span></h3>
+						<h3>Total Occupants: <span id="Occupant-Count"><%= OccupantTotal %></span></h3>
+						<h3>Average Time to Enter: <span id="Average-Time"></span> minutes</h3>
+						<button class="btn btn-block btn-primary" onclick="checkInOut('', 'manual-registration', '', '')">Manual Registration</button>
+					</div>
+				</div>
+				<div class="row">	
+					<div class="col-lg-3 offset-lg-2 text-center rounded">
+						<h3>Waiting List</h3>
+						<div id="WaitList-TargetArea">
+							<% WaitList.forEach( function (document) { %>
+								<div class="row margin-10">	
+								<% if(document.status == `notified`) { %>
+									<div class="col-9 bg-success left-rounded-green">
+								<% } else if(document.status == `waiting`) { %>
+									<div class="col-11 bg-warning rounded margin-left-10">
+								<% } else { %>
+									<div class="col-11 bg-danger rounded margin-left-10">
+								<% } %>
+										<p>Number: <%= document.phonenumber %></p>
+										<p>Name: <%= document.name %></p>
+										<p>Group Size: <%= document.partysize %></p>
+									</div>
+									<% if(document.status == `notified`) { %>
+										<button class="col-2 bg-success right-rounded-green check-in-button" onclick="checkInOut('<%= document._id %>', 'in', '<%= document.phonenumber %>', '<%= document.name %>')">
+											<h1>&#10003</h1>
+										</button>
+									<% } %>
+								</div>
+							<% }) %>
+						</div>
+					</div>	
+					<div class="col-lg-3 offset-lg-2 text-center">
+						<h3>Occupants List</h3>
+						<div id="OccupantList-TargetArea">
+							<% OccupantList.forEach( function (document) { %>
+								<div class="row margin-10">
+									<div class="col-9 bg-primary left-rounded-blue">
+										<p>Number: <%= document.phonenumber %></p>
+										<p>Name: <%= document.name %></p>
+										<p>Group Size: <%= document.partysize %></p>
+									</div>
+									<button class="col-2 bg-danger right-rounded-red check-in-button" onclick="checkInOut('<%= document._id %>','out', '<%= document.phonenumber %>', '<%= document.name %>')">
+										<h1>&#10007</h1>
+									</button>
+								</div>
+							<% }) %>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-8 offset-lg-2 text-center">
+						<h3>History</h3>
+						<div id="HistoryList-TargetArea">
+							<% HistoryList.forEach( function (document) { %>
+								<div class="row margin-10">
+									<% if (document.status == `expired` || document.status == `invalid`) { %>
+										<div class="col btn btn-danger">
+									<% } else { %>
+										<div class="col btn btn-secondary">
+									<% } %>
+										<p>Number: <%= document.phonenumber %></p>
+										<p>Name: <%= document.name %></p>
+										<p>Group Size: <%= document.partysize %></p>
+										<p>Status Message: <%= document.status %></p>
+									</div>
+									
+								</div>
+							<% }) %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+</script>
+<script src="/js/site.js" ></script>

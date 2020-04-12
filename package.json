@@ -1,0 +1,42 @@
+{
+  "name": "Social Distance StorQ",
+  "version": "1.0.0",
+  "description": "SMS and manual queue web app to manage entry to a facility. Pronounced as stork)",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zombat/SD-StorQ"
+  },
+  "author": "Thal Marcelin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zombat/SD-StorQ"
+  },
+  "homepage": "https://github.com/zombat/SD-StorQ",
+  "dependencies": {
+    "assert": "^2.0.0",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "express-session": "^1.17.0",
+    "http": "0.0.1-security",
+    "js-sha512": "^0.8.0",
+    "mongodb": "^3.5.5",
+    "mongoose": "^5.9.7",
+    "nodemon": "^1.19.4",
+    "passport": "^0.4.1",
+    "passport-github": "^1.1.0",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^5.0.1",
+    "qrcode": "^1.4.4",
+    "socket.io": "^2.3.0",
+    "speakeasy": "^2.0.0",
+    "twilio": "^3.42.1"
+  }
+}
