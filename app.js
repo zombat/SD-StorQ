@@ -2,8 +2,6 @@ require(`dotenv`).config();
 const	express = require(`express`),
 		mongoose = require(`mongoose`),
 		app = express(),
-		//http = require(`http`).createServer(app),
-		https = require(`https`),
 		fs = require(`fs`),
 		assert = require(`assert`),
 		bodyParser = require(`body-parser`),
@@ -14,9 +12,14 @@ const	express = require(`express`),
 		passport = require(`passport`),
 		mongoClient = require(`./mongoClient`),	
 		DATABASE_URL = process.env.DATABASE_URL;
-		//global.io = require(`socket.io`)(http);
-		global.io = require(`socket.io`)(https);
 
+if(process.env.SERVER_MODE == `HTTP`){
+	var http = require(`http`).createServer(app);
+	global.io = require(`socket.io`)(http);
+} else {
+	var https = require(`https`);
+	global.io = require(`socket.io`)(https);
+}
 
 // Configure app
 app.set(`view engine`, `ejs`);
@@ -55,25 +58,23 @@ if(process.env.MONGOOSE_USER != `` && process.env.MONGOOSE_PASSWORD != ``){
 	}
 
 mongoose.connect(mongoooseURL).then((db =>{
-    // boot
 	mongoClient.connect(() => {
 		mongoClient.get().db(`queue`).collection(`twilio`).createIndex( { 'smsreceivedtime': 1 }, { 'expireAfterSeconds': parseInt(process.env.SMS_CHECKIN_TIMER)  }, (err, response) =>{
 			assert.equal(null, err);
-			console.log(response);
 		});
 		
-		https.createServer({
-			key: fs.readFileSync(`./domain-key.txt`),
-			cert: fs.readFileSync(`./domain-crt.txt`)
-		}, app).listen(process.env.HTTPS_PORT, () => {
-		 console.log(`HTTPS listening on ` + process.env.HTTPS_PORT)
-		});
-
-		/*
-		http.listen(process.env.HTTP_PORT, ()=>{
-			console.log(`HTTP listenning on ` + process.env.HTTP_PORT);
-		});
-		*/
+		if(process.env.SERVER_MODE == `HTTP`){
+			http.listen(process.env.HTTP_PORT, ()=>{
+				console.log(`HTTP listenning on ` + process.env.HTTP_PORT);
+			});
+		} else {
+			https.createServer({
+				key: fs.readFileSync(`./domain-key.txt`),
+				cert: fs.readFileSync(`./domain-crt.txt`)
+			}, app).listen(process.env.HTTPS_PORT, () => {
+			 console.log(`HTTPS listening on ` + process.env.HTTPS_PORT)
+			});
+		}	
 	});
 })).catch(dbErr =>{
     console.log(`Connection Error : `, dbErr.message);
