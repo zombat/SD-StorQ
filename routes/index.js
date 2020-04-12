@@ -44,21 +44,21 @@ router.post(`/sms`,(req, res)=>{
 						};
 						mongoClient.get().db(`queue`).collection(`twilio`).insertOne( newDocument, (err, response)=>{
 							assert.equal(null, err);
-							twiml.message(`The current average wait time has been: ` + EstimatedWaitTime.toString() + ` minutes. Do you want to get in line? (respond yes or no)`);
+							twiml.message(process.env.SITE_NAME + `: The current average wait time has been: ` + EstimatedWaitTime.toString() + ` minutes. Do you want to get in line? (respond yes or no)`);
 							res.writeHead(200, {'Content-Type': 'text/xml'});
 							res.end(twiml.toString());
 						});
 					} else if(document.step == 1 && req.body.Body.match(/yes/i)){
 						mongoClient.get().db(`queue`).collection(`twilio`).updateOne({ '_id': req.body.From },{ '$set': { 'registerby': `Twilio`, 'step': 2 } }, (err, response)=>{
 							assert.equal(null, err);
-							twiml.message(`What is your name?`);
+							twiml.message(process.env.SITE_NAME + `: What is your name?`);
 							res.writeHead(200, {'Content-Type': 'text/xml'});
 							res.end(twiml.toString());
 						});
 					} else if(document.step == 2){
 						mongoClient.get().db(`queue`).collection(`twilio`).updateOne({ '_id': req.body.From },{ '$set': { 'name': req.body.Body, 'step': 3  } }, (err, response)=>{
 							assert.equal(null, err);
-							twiml.message(`How many people (including childern) are in your group? (respond 1 through 3)`);
+							twiml.message(process.env.SITE_NAME + `: How many people (including childern) are in your group? (respond 1 through 3)`);
 							res.writeHead(200, {'Content-Type': 'text/xml'});
 							res.end(twiml.toString());
 						});
@@ -85,7 +85,7 @@ router.post(`/sms`,(req, res)=>{
 											}
 										}
 									}
-									twiml.message(`You are position ` + Position + ` in line. Please wait in your vehicle until you are notified to enter. You will have five minutes to check in after receving your notification message.`);
+									twiml.message(process.env.SITE_NAME + `: You are position ` + Position + ` in line. Please wait in your vehicle until you are notified to enter. You will have five minutes to check in after receving your notification message. *Please observe all local vehicle idling laws*`);
 									res.writeHead(200, {'Content-Type': 'text/xml'});
 									res.end(twiml.toString());
 								});
@@ -94,14 +94,13 @@ router.post(`/sms`,(req, res)=>{
 							});
 						});
 					} else if(document.step == 3){
-						twiml.message(`How many people (including childern) are in your group? (respond 1 through 3)`);
+						twiml.message(process.env.SITE_NAME + `: How many people (including childern) are in your group? (respond 1 through 3)`);
 						res.writeHead(200, {'Content-Type': 'text/xml'});
 						res.end(twiml.toString());				
 					}
 				});
 			} else {
-				console.log(`In queue already`);
-				twiml.message(`You are already in line. The current average wait time has been: ` + EstimatedWaitTime + `minutes`);
+				twiml.message(process.env.SITE_NAME + `: You are already in line. The current average wait time has been: ` + EstimatedWaitTime + `minutes`);
 				res.writeHead(200, {'Content-Type': 'text/xml'});
 				res.end(twiml.toString());
 			}
@@ -339,7 +338,7 @@ function intervalFunction(){
 						if(document.registerby == `Twilio`){
 							twilioClient.messages
 							  .create({
-								 body: 'You have not checked in within the alloted time, and have lost your place in line.',
+								 body: process.env.SITE_NAME + ': You have not checked in within the alloted time, and have lost your place in line.',
 								 from: process.env.TWILIO_PHONE_NUMBER	,
 								 to: `+` + document.phonenumber
 							   })
@@ -365,7 +364,7 @@ function notifyParty(WaitingParty, callback){
 			if(WaitingParty.registerby == `Twilio`){
 				twilioClient.messages
 				  .create({
-					 body: 'It\'s your turn in line. You have five minutes to check in, or you will lose your place.',
+					 body: process.env.SITE_NAME + ': It\'s your turn in line. You have five minutes to check in, or you will lose your place.',
 					 from: process.env.TWILIO_PHONE_NUMBER	,
 					 to: `+` + WaitingParty.phonenumber
 				   })
