@@ -63,7 +63,7 @@ $( document ).ready(()=>{
 	  });
 	  
 	  socket.on(`AverageTime`, (AverageTime)=>{
-		  if(AverageTime = `NaN`){
+		  if(AverageTime == `NaN`){
 			  AverageTime = `0.01`;
 		  }
 		  $(`#Average-Time`).html(AverageTime);

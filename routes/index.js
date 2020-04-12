@@ -418,6 +418,7 @@ function calculateAverageWait(){
 		var AverageTime = (TotalTime/OccupantList.length)/60000;
 		EstimatedWaitTime = AverageTime.toFixed(2);
 		io.emit(`AverageTime`, AverageTime.toFixed(2));
+		console.log(`AverageTime ` + AverageTime.toFixed(2));
 	});
 }
 
